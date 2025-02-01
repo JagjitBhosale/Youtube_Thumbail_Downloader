@@ -22,9 +22,7 @@ function fetchThumbnail() {
         <p>Thumbnail:</p>
         <img src="${thumbnailUrl}" alt="YouTube Thumbnail">
         <br>
-        <a href="${thumbnailUrl}" download="thumbnail.jpg">
-            <button>Download Thumbnail</button>
-        </a>
+        <button onclick="downloadThumbnail('${thumbnailUrl}', '${videoId}')">Download Thumbnail</button>
     `;
 }
 
@@ -33,4 +31,21 @@ function extractVideoId(url) {
     const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
     const match = url.match(regex);
     return match ? match[1] : null;
+}
+
+// Function to Trigger Direct Download
+function downloadThumbnail(thumbnailUrl, videoId) {
+    fetch(thumbnailUrl)
+        .then(response => response.blob())
+        .then(blob => {
+            const blobUrl = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = blobUrl;
+            a.download = `YouTube_Thumbnail_${videoId}.jpg`; // File Name
+            document.body.appendChild(a);
+            a.click(); // Simulate Click
+            document.body.removeChild(a);
+            URL.revokeObjectURL(blobUrl); // Clean up
+        })
+        .catch(error => console.error("Download failed:", error));
 }
